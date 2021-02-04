@@ -1,0 +1,184 @@
+<simulation>
+
+<!-- Begin Jan 2020, run for 10 years-->
+<control>
+    <startmonth>1</startmonth>
+    <startyear>2020</startyear>
+    <duration>120</duration>
+    <decay>lazy</decay>
+</control>
+
+<!-- Use cycamore::Source and cycamore::Sink -->
+<archetypes>
+    <spec>
+        <lib>cycamore</lib>
+        <name>Source</name>
+    </spec>
+    <spec>
+        <lib>cycamore</lib>
+        <name>Sink</name>
+    </spec>
+    <spec><lib>cycamore</lib><name>Separations</name></spec>
+    <spec><lib>agents</lib><name>NullInst</name></spec>
+    <spec><lib>agents</lib><name>NullRegion</name></spec>
+    <spec><lib>cycamore</lib><name>DeployInst</name></spec>
+</archetypes>
+
+<!-- Throughput roughly approximated from Cameco reports, inventory
+size completely made up-->
+<facility>
+    <name>CigarLakeMine</name>
+    <config>
+        <Source>
+            <outcommod>u_ore</outcommod>
+            <outrecipe>cl_ore</outrecipe>
+            <throughput>213188</throughput> <!-- kg/month -->
+            <inventory_size>1e11</inventory_size>
+        </Source>
+    </config>
+</facility>
+
+<!-- Fabricated example of imported material-->
+<facility>
+    <name>Import</name>
+    <config>
+        <Source>
+            <outcommod>uranium_dioxide</outcommod>
+            <outrecipe>uo2</outrecipe>
+            <throughput>25000</throughput>
+            <inventory_size>1000000</inventory_size>
+        </Source>
+    </config>
+</facility>
+
+<facility>
+    <name>Mill</name>
+    <config>
+        <Separations>
+            <feed_commods>
+                <val>u_ore</val>
+            </feed_commods>
+            <feed_recipe>cl_ore</feed_recipe>
+            <feedbuf_size>10000</feedbuf_size>
+            <throughput>10000</throughput>
+            <leftover_commod>silica</leftover_commod>
+            <leftoverbuf_size>1e+299</leftoverbuf_size>
+            <streams>
+                <item>
+                    <commod>nat_u</commod>
+                    <info>
+                        <buf_size>5000</buf_size>
+                        <efficiencies>
+                            <item>
+                                <comp>U</comp>
+                                <eff>0.99</eff>
+                            </item>
+                            <item>
+                                <comp>O</comp>
+                                <eff>0.99</eff>
+                            </item>
+                        </efficiencies>
+                    </info>
+                </item>
+            </streams>
+        </Separations>
+    </config>
+</facility>
+
+<!-- prefers uranium_dioxide, when available -->
+<facility>
+    <name>Export</name>
+    <config>
+        <Sink>
+            <in_commods>
+                <val>u_ore</val>
+                <val>nat_u</val>
+                <val>uranium_dioxide</val>
+            </in_commods>
+            <in_commod_prefs>
+                <val>1</val>
+                <val>2</val>
+                <val>5</val>
+            </in_commod_prefs>
+            <max_inv_size>1e+12</max_inv_size>
+            <capacity>200000</capacity>
+        </Sink>
+    </config>
+</facility>
+
+<!-- PyNE nucname for id 
+Use average ore grade at Cigar Lake, silica (SiO2) for the rest of the ore-->
+<recipe>
+    <name>cl_ore</name>
+    <basis>atom</basis>
+    <nuclide><id>140280000</id><comp>0.26219</comp></nuclide>
+    <nuclide><id>140290000</id><comp>0.01337</comp></nuclide>
+    <nuclide><id>140300000</id><comp>0.00882</comp></nuclide>
+    <nuclide><id>080160000</id><comp>0.67557</comp></nuclide>
+    <nuclide><id>922350000</id><comp>0.00028</comp></nuclide>
+    <nuclide><id>922380000</id><comp>0.03978</comp></nuclide>
+</recipe>
+
+<recipe>
+    <name>uo2</name>
+    <basis>atom</basis>
+    <nuclide><id>922350000</id><comp>0.00233</comp></nuclide>
+    <nuclide><id>922380000</id><comp>0.33100</comp></nuclide>
+    <nuclide><id>080160000</id><comp>0.66667</comp></nuclide>
+</recipe>
+
+<!-- Ignoring regions/institutions-->
+<region>
+    <name>NR</name>
+    <config><NullRegion/></config>
+    <institution>
+      <name>NI</name>
+      <initialfacilitylist>
+        <entry>
+          <prototype>CigarLakeMine</prototype>
+          <number>1</number>
+        </entry>
+        <entry>
+          <prototype>Import</prototype>
+          <number>1</number>
+        </entry>
+        <entry>
+          <prototype>Export</prototype>
+          <number>1</number>
+        </entry>
+      </initialfacilitylist>
+      <config><NullInst/></config>
+    </institution>
+</region>
+
+<region>
+    <name>Region</name>
+    <config><NullRegion/></config>
+    <institution>
+        <name>Company</name>
+        <config>
+            <DeployInst>
+                <prototypes>
+                    <val>Mill</val>
+                    <val>Mill</val>
+                </prototypes>
+                <build_times>
+                    <val>12</val>
+                    <val>60</val>
+                </build_times>
+                <n_build>
+                    <val>1</val>
+                    <val>2</val>
+                </n_build>
+                <lifetimes>
+                    <val>72</val>
+                    <val>120</val>
+                </lifetimes>
+            </DeployInst>
+        </config>
+    </institution>
+</region>
+
+
+
+</simulation>
