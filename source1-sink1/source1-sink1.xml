@@ -1,0 +1,98 @@
+<simulation>
+    <!-- http://fuelcycle.org/user/input_specs/control.html -->
+    <control>
+        <startmonth>1</startmonth>
+        <startyear>2020</startyear>
+        <duration>60</duration> <!-- 60 timesteps -->
+        <dt>2627942</dt> <!-- month in seconds -->
+    </control>
+
+    <!-- http://fuelcycle.org/user/input_specs/archetypes.html
+    Cycamore
+    http://fuelcycle.org/user/cycamoreagents.html
+    -->
+    <archetypes>
+        <spec>
+            <lib>cycamore</lib>
+            <name>Source</name>
+        </spec>
+        <spec>
+            <lib>cycamore</lib>
+            <name>Sink</name>
+        </spec>
+        <spec>
+            <lib>agents</lib>
+            <name>NullInst</name>
+        </spec>
+        <spec>
+            <lib>agents</lib>
+            <name>NullRegion</name>
+        </spec>
+    </archetypes>
+
+    <!--
+        General facility block info
+        http://fuelcycle.org/user/input_specs/facility.html
+        Specific variables for Cycamore facilities
+        http://fuelcycle.org/user/cycamoreagents.html
+    -->
+    <facility>
+        <name>Source</name>
+        <config>
+            <Source>
+                <outcommod>yellowcake</outcommod>
+                <outrecipe>u3o8</outrecipe>
+                <throughput>5</throughput>
+                <inventory_size>100</inventory_size>
+            </Source>
+        </config>
+    </facility>
+
+    <facility>
+        <name>Sink</name>
+        <config>
+            <Sink>
+                <in_commods>
+                    <val>yellowcake</val>
+                </in_commods>
+                <max_inv_size>1e6</max_inv_size>
+                <capacity>2</capacity>
+            </Sink>
+        </config>
+    </facility>
+
+    <!-- http://fuelcycle.org/user/input_specs/recipe.html -->
+    <recipe>
+        <name>u3o8</name>
+        <basis>atom</basis>
+        <nuclide><id>U235</id><comp>0.00191</comp></nuclide>
+        <nuclide><id>U238</id><comp>0.27082</comp></nuclide>
+        <nuclide><id>O16</id><comp>0.72727</comp></nuclide>
+    </recipe>
+
+    <!-- 
+        http://fuelcycle.org/user/input_specs/region.html
+        http://fuelcycle.org/user/input_specs/inst.html
+    -->
+    <region>
+        <name>Region</name>
+        <!-- nothing is need to configure null regions/institutions-->
+        <config><NullRegion/></config>
+        <institution>
+            <name>Institution</name>
+            <config><NullInst/></config>
+            <!-- Deploy each of the facility prototypes build earlier-->
+            <initialfacilitylist>
+                <entry>
+                    <prototype>Source</prototype>
+                    <number>1</number>
+                </entry>
+                <entry>
+                    <prototype>Sink</prototype>
+                    <number>1</number>
+                </entry>
+            </initialfacilitylist>
+        </institution>
+    </region>
+
+</simulation>
